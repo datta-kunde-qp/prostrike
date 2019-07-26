@@ -19,17 +19,30 @@ io.on("connection", socket => {
         console.log('user disconnected');
         delete gameState.players[socket.id]
     });
-    socket.on('newPlayer', () => {
-        gameState.players[socket.id] = {
-            x: 250,
-            y: 250,
-            width: 25,
-            height: 25
+    socket.on('newPlayer', (data) => {
+       console.log(data)
+        if (data.playerID > 0) {
+            if(data.pin === '123456'){
+                gameState.players[data.playerID] = {
+                    playerID: data.playerID,
+                    x: 250,
+                    y: 250
+                }
+
+                io.emit("StartGame", gameState.players[data.playerID])
+            } else {
+                io.emit("WrongPin")
+            }
+        } else {
+            io.emit("SelectPlayer")
         }
+        io.emit("PlayGame")
     })
-    setInterval(() => {
-        io.sockets.emit('state', gameState);
-    }, 1000 / 60);
+
+    if(gameState.players.length === 2) {
+        io.emit("Game Begin")
+        //start timer on it
+    }
 });
 
 
