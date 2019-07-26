@@ -2,6 +2,8 @@ import io from "socket.io-client";
 import {Component} from "react";
 import {ImageBackground, StyleSheet, Text, TouchableOpacity, View,TextInput, Alert} from "react-native";
 import React from "react";
+import AsyncStorage from '@react-native-community/async-storage';
+
 
 export default class Client extends Component {
     constructor(props) {
@@ -9,30 +11,55 @@ export default class Client extends Component {
         this.state = {
             pin: '',
             playerID:0,
+            players:[]
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         const {navigate} = this.props.navigation;
 
         this.socket = io("http://192.168.5.106:3000");
         this.socket.on("SelectPlayer",()=>{
             Alert.alert('Select a player');
-        })
+        });
         this.socket.on("WrongPin",()=>{
             Alert.alert('Wrong PIN entered');
+        });
+        this.socket.on("StartGame", (id) => {
+            if(!this.state.players.includes(id)) {
+                this.setState({
+                    players: [...this.state.players, id]
+                })
+            } else {
+                Alert.alert('Already existing player');
+            }
+            if(this.state.players.length === 2) {
+                this.socket.emit("navigateAll")
+            }
+
+        });
+        this.socket.on("navigateClient", async () => {
+            navigate("GameBoard",{
+                hostID: await AsyncStorage.getItem('uniqueId'),
+                socket: this.socket
+            });
         })
-        this.socket.on("StartGame",(data) => { navigate("GameBoard",{
-            playerDetails: data
-        })})
+
+    }
+
+    async setUniqueID() {
+       await AsyncStorage.setItem('uniqueId', this.state.playerID)
     }
 
     addNewPlayer() {
-        let data = {
-            playerID: this.state.playerID,
-            pin: this.state.pin
-        }
-        this.socket.emit('newPlayer', data);
+        this.setUniqueID()
+
+            let data = {
+                playerID: this.state.playerID,
+                pin: this.state.pin,
+                players: this.state.players
+            }
+            this.socket.emit('newPlayer', data);
     }
 
     submitPIN() {
@@ -60,8 +87,8 @@ export default class Client extends Component {
                             marginRight:5}}>
                             <TouchableOpacity style={{flex:1}} onPress={() => {
                                 this.setState({
-                                    playerID:1
-                                })
+                                    playerID:1,
+                            })
                             }}>
 
                             </TouchableOpacity>

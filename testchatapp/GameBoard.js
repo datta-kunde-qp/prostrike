@@ -28,25 +28,42 @@ const playerMovement = {
     right: false
 };
 
+
+
 export default class GameBoard extends Component {
 
 
-    constructor(props) {
+     constructor(props) {
         super(props);
         this.canvasRef = React.createRef();
+         this.host =  props.navigation.getParam('hostID', {});
+         this.guest = 1;
+         if(this.host === 1) {
+             this.guest = 2
+         }
+         gameState.players[this.host] = {
+             x: 10,
+             y: 380,
+         };
 
-        gameState.players[1] = {
-            x: 10,
-            y: 380,
-        };
-
+         gameState.players[this.guest] = {
+             x: 360,
+             y: 380,
+         };
     }
 
     componentDidMount() {
-        this.socket = io("http://192.168.4.59:3000");
-
+        this.socket = this.props.navigation.getParam('socket', undefined);
         this.createStructure();
 
+        this.socket.on("MoveToClient",(data) => {
+            gameState.players[data.playerId] = {
+                x: data.x,
+                y: data.y,
+            };
+            console.log("x "+gameState.players)
+            this.drawPlayer(gameState.players[data.playerId]);
+        });
     }
 
     createStructure() {
@@ -75,36 +92,22 @@ export default class GameBoard extends Component {
         });
 
 
-        this.drawPlayer(gameState.players[1]);
-        //this.drawPlayer(360,380);
+        this.drawPlayer(gameState.players[this.host]);
+        this.drawPlayer(gameState.players[this.guest]);
+        // this.drawPlayer(gameState.players[2]);
     }
 
     drawPlayer = (player, direction) => {
         const canvas = this.canvasRef.current;
         const context = canvas.getContext('2d');
-        if(direction) {
-            switch (direction) {
-                case 1://Left
-                    context.clearRect((player.x - 5), (player.y - 5), playerSize, playerSize);
-                    break;
-                case 2://Top
-                    context.clearRect((player.x - 5), (player.y - 5), playerSize, playerSize);
-                    break;
-                case 3://Right
-                    context.clearRect((player.x - 5), (player.y - 5), playerSize, playerSize);
-                    break;
-                case 4://bottom
-                    context.clearRect((player.x - 5), (player.y - 5), playerSize, playerSize);
-                    break;
-            }
+        context.clearRect((player.x - 5), (player.y - 5), playerSize, playerSize);
 
-        }
         const playerImage = new CanvasImage(canvas);
         playerImage.src = 'https://mobileapp.questionpro.com/InHouseBuild/Andriod/SurveySwipe/prostrike/player.png';
         playerImage.addEventListener('load', () => {
-            if(this.checkCollision(player.x, player.y)) {
+            // if(this.checkCollision(player.x, player.y)) {
                 context.drawImage(playerImage, player.x, player.y, playerSize, playerSize);
-            }
+            // }
         });
 
     };
@@ -123,28 +126,52 @@ export default class GameBoard extends Component {
     }
 
     _onLeftPressButton = () => {
-        const player = gameState.players[1];
+        const player = gameState.players[this.host];
         player.x -= 5;
+        let data1 = {
+            playerId:this.host,
+            x:player.x,
+            y:player.y
+        }
+        this.socket.emit("MoveToServer",data1)
         this.drawPlayer(player,1);
     };
 
 
     _onTopPressButton = () => {
-        const player = gameState.players[1];
+        const player = gameState.players[this.host];
         player.y -= 5;
+        let data1 = {
+            playerId:this.host,
+            x:player.x,
+            y:player.y
+        }
+        this.socket.emit("MoveToServer",data1)
         this.drawPlayer(player,2);
     };
 
 
     _onRightPressButton = () => {
-        const player = gameState.players[1];
+        const player = gameState.players[this.host];
         player.x += 5;
+        let data1 = {
+            playerId:this.host,
+            x:player.x,
+            y:player.y
+        }
+        this.socket.emit("MoveToServer",data1)
         this.drawPlayer(player,3);
     };
 
     _onBottomPressButton = () => {
-        const player = gameState.players[1];
+        const player = gameState.players[this.host];
         player.y += 5;
+        let data1 = {
+            playerId:this.host,
+            x:player.x,
+            y:player.y
+        }
+        this.socket.emit("MoveToServer",data1)
         this.drawPlayer(player,4);
     };
 
