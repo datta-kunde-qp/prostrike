@@ -15,7 +15,10 @@ const MainNavigator = createStackNavigator({
             screen: Client
         },
         GameBoard: {
-            screen: GameBoard
+            screen: GameBoard,
+            navigationOptions: {
+                header: null,
+            }
         }
     },
     {
