@@ -64,6 +64,9 @@ export default class GameBoard extends Component {
             console.log("x "+gameState.players)
             this.drawPlayer(gameState.players[data.playerId]);
         });
+        // this.socket.on("FireClient",(data)=>{
+        //     this.drawBullet(data,5)
+        // })
     }
 
     createStructure() {
@@ -132,7 +135,7 @@ export default class GameBoard extends Component {
             playerId:this.host,
             x:player.x,
             y:player.y
-        }
+        };
         this.socket.emit("MoveToServer",data1)
         this.drawPlayer(player,1);
     };
@@ -145,7 +148,7 @@ export default class GameBoard extends Component {
             playerId:this.host,
             x:player.x,
             y:player.y
-        }
+        };
         this.socket.emit("MoveToServer",data1)
         this.drawPlayer(player,2);
     };
@@ -158,7 +161,7 @@ export default class GameBoard extends Component {
             playerId:this.host,
             x:player.x,
             y:player.y
-        }
+        };
         this.socket.emit("MoveToServer",data1)
         this.drawPlayer(player,3);
     };
@@ -170,9 +173,27 @@ export default class GameBoard extends Component {
             playerId:this.host,
             x:player.x,
             y:player.y
-        }
+        };
         this.socket.emit("MoveToServer",data1)
         this.drawPlayer(player,4);
+    };
+
+    onFirePress = () =>{
+        const player = gameState.players[this.host];
+        this.drawBullet(player, 23);
+    };
+
+    drawBullet =(player, value)=>{
+        const canvas = this.canvasRef.current;
+        const context = canvas.getContext('2d');
+        context.fillStyle = 'red';
+        context.fillRect(player.x + value, player.y ,7,7);
+        let data1 = {
+            playerId:this.host,
+            x:player.x,
+            y:player.y
+        };
+        this.socket.emit("Fire",data1)
     };
 
     render() {
@@ -182,7 +203,7 @@ export default class GameBoard extends Component {
                 <Canvas ref={this.canvasRef}/>
 
 
-                <View style={{flex: 1, backgroundColor:'white',paddingTop:10,flexDirection:'row', paddingStart:50}}>
+                <View style={{flex: 1, backgroundColor:'white',paddingTop:10,flexDirection:'row', paddingStart:20}}>
                     <TouchableOpacity style={{height: 40,width: 80}}
                                       onPress={this._onLeftPressButton}>
                         <Text style={{color: 'black'}}> Left</Text>
@@ -201,6 +222,11 @@ export default class GameBoard extends Component {
                     <TouchableOpacity style={{width: 80}}
                                       onPress={this._onBottomPressButton}>
                         <Text> Bottom</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{width: 80}}
+                                      onPress={this.onFirePress}>
+                        <Text> Fire</Text>
                     </TouchableOpacity>
                 </View>
             </ImageBackground>);

@@ -31,6 +31,9 @@ io.on("connection", socket => {
         console.log("MoveToServer")
         io.emit("MoveToClient",data1)
     })
+    socket.on("Fire",(data1) => {
+        io.emit("FireClient",data1)
+    })
 });
 
 

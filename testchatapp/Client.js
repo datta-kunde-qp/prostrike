@@ -36,7 +36,6 @@ export default class Client extends Component {
             if(this.state.players.length === 2) {
                 this.socket.emit("navigateAll")
             }
-
         });
         this.socket.on("navigateClient", async () => {
             navigate("GameBoard",{
