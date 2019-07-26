@@ -7,7 +7,9 @@
  */
 
 import React, { Component } from "react";
-import { StyleSheet, View, ImageBackground,TouchableOpacity, Text } from "react-native";
+import MainNavigator from './index.router'
+
+import { StyleSheet, View} from "react-native";
 
 export default class App extends Component {
     constructor(props) {
@@ -15,21 +17,10 @@ export default class App extends Component {
     }
 
     render() {
-        return (<View style={styles.container}>
-            <ImageBackground source={require('./images/homepage.png')} resizeMode='stretch' style={styles.image}/>
-            <View style={[styles.buttonStyle,{bottom: 80, marginBottom:20}]}>
-                <TouchableOpacity style={{flex:1}}>
-                <Text style={{fontSize: 25,
-                    textAlignVertical: 'center'}}>Join Room</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.buttonStyle}>
-                <TouchableOpacity style={{flex:1}}>
-                    <Text style={{fontSize: 25,
-                        textAlignVertical: 'center'}}>Create Room</Text>
-                </TouchableOpacity>
-            </View>
-        </View>);
+        return (
+            <View style={styles.container}>
+            <MainNavigator/>
+        </View>)
     }
 }
 
