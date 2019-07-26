@@ -18,7 +18,7 @@ export default class App extends Component {
     }
 
     componentDidMount() {
-        this.socket = io("http://192.168.0.106:3000");
+        this.socket = io("http://192.168.4.59:3000");
 
         const canvas = this.canvasRef.current;
         const context = canvas.getContext('2d');

@@ -5,7 +5,7 @@ const io = require("socket.io").listen(server);
 const port = 3000;
 
 const gameState = {
-    players
+    players:[]
 }
 
 
@@ -29,7 +29,7 @@ io.on("connection", socket => {
     })
     setInterval(() => {
         io.sockets.emit('state', gameState);
-    }, 1000 / 60);Q23E
+    }, 1000 / 60);
 });
 
 
