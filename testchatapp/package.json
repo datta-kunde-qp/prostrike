@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.6.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "react": "16.8.6",
     "react-native": "0.60.4",
     "react-native-canvas": "^0.1.33",
